@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connector Data</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css"> <!-- Add a CSS file for styling -->
 </head>
 <body>
     <div class="container mt-4">
         <h1>Connector Data</h1>
-        <input type="text" id="searchInput" class="form-control form-control-lg mb-3" placeholder="Search by Bank Name or any field">
-        <div class="row-count">Total rows: <span id="rowCount">0</span></div>
+        <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search by Bank Name">
         <table class="table">
             <thead>
                 <tr>
@@ -31,48 +30,35 @@
     <script>
         const searchInput = document.getElementById('searchInput');
         const connectorTable = document.getElementById('connectorTable');
-        const rowCountDisplay = document.getElementById('rowCount');
 
-        function populateTable(data) {
-            connectorTable.innerHTML = '';
-            rowCountDisplay.textContent = data.length;
+        searchInput.addEventListener('input', () => {
+            const searchValue = searchInput.value.toLowerCase();
 
-            data.forEach(connector => {
-                const row = `
-                    <tr>
-                        <td><img src="${connector.institution.logo.links.full}" alt="${connector.institution.name}" style="max-width: 25px;"></td>
-                        <td>${connector.institution.name}</td>
-                        <td>${connector.institution.country}</td>
-                        <td>${connector.status}</td>
-                        <td>${connector.method}</td>
-                        <td>${connector.institution.tier}</td>
-                    </tr>
-                `;
-                connectorTable.innerHTML += row;
-            });
-        }
+            fetch('/api/connectors')
+                .then(response => response.json())
+                .then(data => {
+                    connectorTable.innerHTML = '';
 
-        fetch('/api/connectors')
-            .then(response => response.json())
-            .then(data => {
-                populateTable(data);
-
-                searchInput.addEventListener('input', () => {
-                    const searchValue = searchInput.value.toLowerCase();
-                    const filteredData = data.filter(connector => {
-                        return Object.values(connector).some(value => {
-                            if (typeof value === 'string') {
-                                return value.toLowerCase().includes(searchValue);
-                            }
-                            return false;
-                        });
+                    data.forEach(connector => {
+                        if (connector.institution.name.toLowerCase().includes(searchValue)) {
+                            const row = `
+                                <tr>
+                                    <td><img src="${connector.institution.logo}" alt="${connector.institution.name}"></td>
+                                    <td>${connector.institution.name}</td>
+                                    <td>${connector.institution.country}</td>
+                                    <td>${connector.status}</td>
+                                    <td>${connector.method}</td>
+                                    <td>${connector.institution.tier}</td>
+                                </tr>
+                            `;
+                            connectorTable.innerHTML += row;
+                        }
                     });
-                    populateTable(filteredData);
+                })
+                .catch(error => {
+                    console.error(error);
                 });
-            })
-            .catch(error => {
-                console.error(error);
-            });
+        });
     </script>
 </body>
 </html>
