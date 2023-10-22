@@ -4,16 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connector Data</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Add a CSS file for styling -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container mt-4">
-        <h1>Connector Data</h1>
+        <h1>Connector EP</h1>
+        <p><i> Search By Connectors Name Only!  </i></p>
         <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search by Bank Name">
+        <div id="loadingSpinner" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>        
         <table class="table">
             <thead>
                 <tr>
-                    <th>Logo</th>
+                    <th>Bank Logo</th>
                     <th>Bank Name</th>
                     <th>Country</th>
                     <th>Status</th>
@@ -30,35 +36,67 @@
     <script>
         const searchInput = document.getElementById('searchInput');
         const connectorTable = document.getElementById('connectorTable');
+        let connectorsData = []; // Store the connectors data
+
+        // Function to populate the table with connectors
+        function populateTable(data) {
+            connectorTable.innerHTML = '';
+
+            data.forEach(connector => {
+                const row = `
+                    <tr>
+                        <td><img src="${connector.institution.logo.links.full}" alt="${connector.institution.name} Logo" width="50"></td>
+                        <td>${connector.institution.name}</td>
+                        <td>${connector.institution.country}</td>
+                        <td>${connector.status}</td>
+                        <td>${connector.method}</td>
+                        <td>${connector.institution.tier}</td>
+                    </tr>
+                `;
+                connectorTable.innerHTML += row;
+            });
+        }
 
         searchInput.addEventListener('input', () => {
-            const searchValue = searchInput.value.toLowerCase();
+        showSpinner(); // Show the spinner when a search starts
 
-            fetch('/api/connectors')
-                .then(response => response.json())
-                .then(data => {
-                    connectorTable.innerHTML = '';
+        const searchValue = searchInput.value.toLowerCase();
 
-                    data.forEach(connector => {
-                        if (connector.institution.name.toLowerCase().includes(searchValue)) {
-                            const row = `
-                                <tr>
-                                    <td><img src="${connector.institution.logo}" alt="${connector.institution.name}"></td>
-                                    <td>${connector.institution.name}</td>
-                                    <td>${connector.institution.country}</td>
-                                    <td>${connector.status}</td>
-                                    <td>${connector.method}</td>
-                                    <td>${connector.institution.tier}</td>
-                                </tr>
-                            `;
-                            connectorTable.innerHTML += row;
-                        }
-                    });
-                })
-                .catch(error => {
-                    console.error(error);
-                });
+        // Simulate a delay to see the spinner in action
+        setTimeout(() => {
+            populateTable(connectorsData.filter(connector =>
+                connector.institution.name.toLowerCase().includes(searchValue)
+            ));
+            hideSpinner(); // Hide the spinner when the search is complete
+            }, 500); // Simulate a 500ms delay, you can adjust this as needed
         });
+
+        // Function to show the spinner
+        function showSpinner() {
+            const spinner = document.getElementById('loadingSpinner');
+            spinner.style.display = 'block';
+        }
+
+        // Function to hide the spinner
+        function hideSpinner() {
+            const spinner = document.getElementById('loadingSpinner');
+            spinner.style.display = 'none';
+        }
+
+        // Fetch the connectors when the page initially loads
+        showSpinner(); // Show spinner
+        fetch('/api/connectors')
+            .then(response => response.json())
+            .then(data => {
+                connectorsData = data;
+                populateTable(connectorsData); // Populate the table
+                hideSpinner(); // Hide spinner when data is loaded
+            })
+            .catch(error => {
+                console.error(error);
+                hideSpinner(); // Hide spinner on error
+            });
+
     </script>
 </body>
 </html>

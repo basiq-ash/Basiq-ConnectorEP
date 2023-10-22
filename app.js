@@ -3,18 +3,25 @@ const axios = require('axios');
 
 const app = express();
 const port = 3000;
+let connectorsData = [];
+
+
+async function fetchConnectors() {
+  try {
+    const response = await axios.get('https://au-api.basiq.io/public/connectors');
+    connectorsData = response.data.data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Fetch connectors when the server starts
+fetchConnectors();
 
 app.use(express.static('public'));
 
-app.get('/api/connectors', async (req, res) => {
-  try {
-    const response = await axios.get('https://au-api.basiq.io/public/connectors');
-    const connectors = response.data.data;
-    res.json(connectors);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
+app.get('/api/connectors', (req, res) => {
+  res.json(connectorsData);
 });
 
 app.listen(port, () => {
