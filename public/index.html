@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connector Data</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container mt-4">
@@ -15,23 +16,38 @@
             <div class="spinner-border text-primary" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
-        </div>        
+        </div>     
+    <div class="table-container" >
         <table class="table">
             <thead>
                 <tr>
-                    <th>Bank Logo</th>
-                    <th>Bank Name</th>
-                    <th>Bank ID</th>
-                    <th>Country</th>
-                    <th>Status</th>
+                    <th>Type</th>
+                    <th>ID</th>
                     <th>Method</th>
-                    <th>Tier</th>
+                    <th>Stage</th>
+                    <th>Status</th>
+                    <th>Institution Type</th>
+                    <th>Institution Name</th>
+                    <th>Institution Tier</th>
+                    <th>Institution Country</th>
+                    <th>Logo</th>
+                    <th>Scopes</th>
+                    <th>Authorization Type</th>
+                    <th>Login ID Caption</th>
+                    <th>Password Caption</th>
+                    <th>Average Duration (Verify Credentials)</th>
+                    <th>Average Duration (Retrieve Accounts)</th>
+                    <th>Average Duration (Retrieve Transactions)</th>
+                    <th>Average Duration (Retrieve Meta)</th>
+                    <th>Average Duration (Total)</th>
                 </tr>
-            </thead>
+            </thead>        
             <tbody id="connectorTable">
                 <!-- Data will be populated here using JavaScript -->
             </tbody>
         </table>
+    </div>
+    
     </div>
 
     <script>
@@ -41,23 +57,37 @@
 
         // Function to populate the table with connectors
         function populateTable(data) {
+            const connectorTable = document.getElementById('connectorTable');
             connectorTable.innerHTML = '';
 
             data.forEach(connector => {
                 const row = `
-                    <tr>
-                        <td><img src="${connector.institution.logo.links.full}" alt="${connector.institution.name} Logo" width="50"></td>
-                        <td>${connector.institution.name}</td>
-                        <td>${connector.institution.country}</td>
+                        <tr>
+                        <td>${connector.type}</td>
                         <td>${connector.id}</td>
-                        <td>${connector.status}</td>
                         <td>${connector.method}</td>
+                        <td>${connector.stage}</td>
+                        <td>${connector.status}</td>
+                        <td>${connector.institution.type}</td>
+                        <td>${connector.institution.name}</td>
                         <td>${connector.institution.tier}</td>
+                        <td>${connector.institution.country}</td>
+                        <td><img src="${connector.institution.logo.links.full}" alt="${connector.institution.name} Logo" width="50"></td>
+                        <td>${connector.scopes.join(', ')}</td>
+                        <td>${connector.authorization.type}</td>
+                        <td>${connector.authorization.meta.login_id_caption || '✘'}</td>
+                        <td>${connector.authorization.meta.password_caption || '✘'}</td>
+                        <td>${connector.stats ? connector.stats.averageDurationMs.verifyCredentials / 1000 : '✘'}</td>
+                        <td>${connector.stats ? connector.stats.averageDurationMs.retrieveAccounts / 1000 : '✘'}</td>
+                        <td>${connector.stats ? connector.stats.averageDurationMs.retrieveTransactions / 1000 : '✘'}</td>
+                        <td>${connector.stats ? connector.stats.averageDurationMs.retrieveMeta / 1000 : '✘'}</td>
+                        <td>${connector.stats ? connector.stats.averageDurationMs.total / 1000 : '✘'}</td>
                     </tr>
                 `;
                 connectorTable.innerHTML += row;
             });
         }
+
 
         searchInput.addEventListener('input', () => {
         showSpinner(); // Show the spinner when a search starts
