@@ -1,3 +1,10 @@
 table tbody tr td img { 
     max-width: 25px; 
 }
+.table-container {
+    overflow-x: auto;
+}
+
+.table {
+    min-width: 100%;
+}
