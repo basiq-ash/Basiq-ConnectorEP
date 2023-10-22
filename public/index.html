@@ -47,13 +47,36 @@
             </tbody>
         </table>
     </div>
-    
+            <div id="noRecordsFound" style="display: none; color: red; font-weight: bold;">No records found</div>
+
     </div>
 
     <script>
         const searchInput = document.getElementById('searchInput');
         const connectorTable = document.getElementById('connectorTable');
         let connectorsData = []; // Store the connectors data
+
+
+        searchInput.addEventListener('input', () => {
+            showSpinner();
+            const searchValue = searchInput.value.toLowerCase();
+            const filteredConnectors = connectorsData.filter(connector =>
+                connector.institution.name.toLowerCase().includes(searchValue)
+            );
+
+            if (filteredConnectors.length === 0) {
+                // Show "No Records Found" message
+                document.getElementById('noRecordsFound').style.display = 'block';
+            } else {
+                // Hide "No Records Found" message
+                document.getElementById('noRecordsFound').style.display = 'none';
+                // Proceed with populating the table
+                populateTable(filteredConnectors);
+            }
+
+            hideSpinner();
+        });
+
 
         // Function to populate the table with connectors
         function populateTable(data) {
