@@ -40,6 +40,7 @@
                     <th>Average Duration (Retrieve Transactions)</th>
                     <th>Average Duration (Retrieve Meta)</th>
                     <th>Average Duration (Total)</th>
+                    <th>CDR FAQs</th>
                 </tr>
             </thead>        
             <tbody id="connectorTable">
@@ -105,6 +106,7 @@
                         <td>${connector.stats ? connector.stats.averageDurationMs.retrieveTransactions / 1000 : '✘'}</td>
                         <td>${connector.stats ? connector.stats.averageDurationMs.retrieveMeta / 1000 : '✘'}</td>
                         <td>${connector.stats ? connector.stats.averageDurationMs.total / 1000 : '✘'}</td>
+                        <td><a href='${connector.institution.cdrFAQ ? connector.institution.cdrFAQ : '#'}'>${connector.institution.cdrFAQ ? connector.institution.cdrFAQ : '✘'}</a></td>
                     </tr>
                 `;
                 connectorTable.innerHTML += row;
