@@ -8,7 +8,7 @@ let connectorsData = [];
 
 async function fetchConnectors() {
   try {
-    const response = await axios.get('https://au-api.basiq.io/public/connectors');
+    const response = await axios.get('https://au-api.basiq.io/public/connectors?filter=connector.method.eq(%27open-banking%27)');
     connectorsData = response.data.data;
   } catch (error) {
     console.error(error);
